@@ -1,0 +1,50 @@
+---
+# tasks file for setupnew_env
+#- name: setup new environment folder structure and setup java & tomcat
+- hosts: myhosts
+  gather_facts: False
+
+  tasks:
+  - name: create a folder structure
+    file:
+     path: /opt/apps/{{ item }}
+     state: directory
+     mode: 0755
+    tags:
+      - test
+    with_items:
+      - java
+      - tomcat
+      - jenkins
+  - name: show me time now on hosts
+    command: whoami
+    register: timenow
+    tags:
+     - timeall
+
+  - debug: var=timenow.stdout_lines
+    tags:
+     - hell
+
+  - unarchive:
+      src: /opt/jdk-8u144-linux-x64.tar.gz
+      dest: /opt/apps/java/
+      mode: 0755
+    tags:
+     - rayudu
+
+  - name: deploy jenkins.war file in remote servers
+    get_url:
+      url: https://updates.jenkins-ci.org/download/war/2.75/jenkins.war
+      dest: /opt/apps/jenkins
+      mode: 0755
+  - name: install the latest version apache
+    yum:
+      name: httpd
+      state: latest
+    tags:
+     - somu
+
+  - service:
+      name: httpd
+      state: started
